@@ -10,7 +10,6 @@ namespace PDias\SamlBundle\Security\Firewall;
 use Symfony\Component\HttpFoundation\Response,
     Symfony\Component\HttpFoundation\RedirectResponse,
     Symfony\Component\HttpKernel\Event\GetResponseEvent,
-    Symfony\Component\Security\Http\Firewall\ListenerInterface,
     Symfony\Component\Security\Core\Exception\AuthenticationException,
     Symfony\Component\Security\Core\SecurityContextInterface,
     Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface,
@@ -33,7 +32,7 @@ use Symfony\Component\HttpFoundation\Response,
 /**
  * @author: Paulo Dias <dias.paulo@gmail.com>
  */
-class SamlListener implements ListenerInterface
+class SamlListener
 {
     protected $tokenStorage;
     protected $authenticationManager;
