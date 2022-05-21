@@ -17,9 +17,15 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('saml');
+        $treeBuilder = new TreeBuilder('saml');
 
+        if (method_exists($treeBuilder, 'getRootNode')) {
+            $rootNode = $treeBuilder->getRootNode();
+        } else {
+            // symfony < 4.2 support
+            $rootNode = $treeBuilder->root('saml');
+        }
+        
         $rootNode
             ->children()
                 ->scalarNode('service_provider')
