@@ -12,6 +12,10 @@ This bundle is under the MIT license. [***See the complete license in the bundle
 
     Resources/meta/LICENSE
 
+## Install ##
+
+    composer require kurollo/SamlBundle
+
 ## Documentation ##
 
 [Getting Started With This Bundle](https://github.com/pdias/SamlBundle/blob/master/Resources/doc/index.md)
