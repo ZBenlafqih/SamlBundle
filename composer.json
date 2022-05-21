@@ -10,6 +10,11 @@
             "name": "Paulo Dias",
             "email": "dias.paulo@gmail.com",
             "role": "Developer"
+        },
+        {
+            "name": "Houssem Maamria",
+            "email": "maamria.houssem@gmail.com",
+            "role": "Developer"
         }
     ],
     "require": {
