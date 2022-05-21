@@ -1,7 +1,7 @@
 {
-    "name": "ing/saml-bundle",
+    "name": "kurollo/saml-bundle",
     "type": "symfony-bundle",
-    "description": "The SamlBundle adds support for SAML 2.0 Service Provider in Symfony2.",
+    "description": "The SamlBundle adds support for SAML 2.0 Service Provider in Symfony >= 5.4",
     "keywords": ["saml","simplesaml", "simpleSAMLphp"],
     "homepage": "https://github.com/pdias/SamlBundle",
     "license": "MIT",
