@@ -21,10 +21,7 @@
         "php": ">=7.2.5"
     },
     "autoload": {
-        "psr-0": { "PDias\\SamlBundle": "" },
-        "psr-4": {
-            "SamlBundle\\": ""
-        }
+        "psr-0": { "PDias\\SamlBundle": "" }
     },
     "minimum-stability": "dev",
     "target-dir": "PDias/SamlBundle"
