@@ -2,8 +2,8 @@
     "name": "kurollo/saml-bundle",
     "type": "symfony-bundle",
     "description": "The SamlBundle adds support for SAML 2.0 Service Provider in Symfony >= 5.4",
-    "keywords": ["saml","simplesaml", "simpleSAMLphp"],
-    "homepage": "https://github.com/pdias/SamlBundle",
+    "keywords": ["saml","simplesaml", "simpleSAMLphp", "saml-bundle", "symfony", "sso"],
+    "homepage": "https://github.com/kurollo/SamlBundle",
     "license": "MIT",
     "authors": [
         {
@@ -23,7 +23,7 @@
     "autoload": {
         "psr-0": { "PDias\\SamlBundle": "" },
         "psr-4": {
-            "SamlBundle": ""
+            "SamlBundle\\": ""
         }
     },
     "minimum-stability": "dev",

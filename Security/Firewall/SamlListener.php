@@ -67,6 +67,10 @@ class SamlListener
         $this->options = $options;
     }
 
+    /**
+     * @param RequestEvent $event
+     * @return TokenInterface|void
+     */
     public function __invoke(RequestEvent $event)
     {
 
@@ -106,12 +110,12 @@ class SamlListener
         }
 
         return;
-        // By default deny authorization
-        $response = new Response();
-        $response->setStatusCode(Response::HTTP_FORBIDDEN);
-        $event->setResponse($response);
     }
 
+    /**
+     * @param Request $request
+     * @param TokenInterface $token
+     */
     private function onSuccess(Request $request, TokenInterface $token)
     {
         if (null !== $this->logger) {
@@ -130,6 +134,9 @@ class SamlListener
         }
     }
 
+    /**
+     * @param Request $request
+     */
     private function requestSaml(Request $request)
     {
         if($this->options['direct_entry'] || $this->httpUtils->checkRequestPath($request, $this->options['check_path']))
@@ -139,6 +146,10 @@ class SamlListener
         }
     }
 
+    /**
+     * @param Request $request
+     * @return mixed
+     */
     private function getReturnUrl(Request $request)
     {
         if($this->options['always_use_default_target_path'] && isset($this->options['default_target_path'])) {
