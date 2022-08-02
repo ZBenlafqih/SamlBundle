@@ -8,13 +8,13 @@
  */
 namespace PDias\SamlBundle\Security\Handlers;
 
-use Symfony\Component\HttpFoundation\Request,
-    Symfony\Component\HttpFoundation\Response, 
-    Symfony\Component\Security\Core\Authentication\Token\TokenInterface,
-    Symfony\Component\Security\Http\Logout\LogoutHandlerInterface,
-    Symfony\Component\HttpFoundation\ParameterBag,
-    Symfony\Component\Security\Http\HttpUtils,
-    PDias\SamlBundle\Saml\SamlAuth;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Http\Logout\LogoutHandlerInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\Security\Http\HttpUtils;
+use PDias\SamlBundle\Saml\SamlAuth;
 
 /**
  * Handles logging out of Saml when the user logs out of Symfony

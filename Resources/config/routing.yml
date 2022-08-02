@@ -8,14 +8,14 @@
 saml_login:
     path: /login-saml
     defaults:
-        _controller: SamlBundle:Security:login
+        _controller: PDias\SamlBundle\Controller\SecurityController::loginAction
 
 saml_login_check:
     path: /login-check-saml
     defaults:
-        _controller: SamlBundle:Security:check
+        _controller: PDias\SamlBundle\Controller\SecurityController::checkAction
 
 saml_logout:
     path: /logout-saml
     defaults:
-        _controller: SamlBundle:Security:logout
+        _controller: PDias\SamlBundle\Controller\SecurityController::logoutAction

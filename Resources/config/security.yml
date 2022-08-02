@@ -19,6 +19,7 @@ services:
         class: PDias\SamlBundle\Security\Firewall\SamlListener
         arguments: ['@security.token_storage', '@security.authentication.manager', '@security.access.decision_manager', '@security.access_map', '@security.http_utils', '@event_dispatcher', '@samlauth.service', '@?logger', {}]
 
+
     saml.service.user.provider:
         public: false
         class: PDias\SamlBundle\Security\User\SamlUserProvider

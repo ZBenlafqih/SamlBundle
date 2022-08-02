@@ -8,13 +8,13 @@
  */
 namespace PDias\SamlBundle\Security\EntryPoint;
 
-use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface,
-    Symfony\Component\HttpFoundation\ParameterBag,
-    Symfony\Component\HttpFoundation\Request,
-    Symfony\Component\HttpFoundation\Response,
-    Symfony\Component\Security\Core\Exception\AuthenticationException,
-    Symfony\Component\Security\Http\HttpUtils,
-    PDias\SamlBundle\Saml\SamlAuth;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Http\HttpUtils;
+use PDias\SamlBundle\Saml\SamlAuth;
 
 /**
  * @author: Paulo Dias <dias.paulo@gmail.com>

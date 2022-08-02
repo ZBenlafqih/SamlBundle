@@ -7,10 +7,9 @@
  */
 namespace PDias\SamlBundle\Security\User;
 
-use Symfony\Component\Security\Core\Role\RoleInterface,
-    Symfony\Component\Security\Core\Role\Role,
-    Symfony\Component\Security\Core\User\UserInterface,
-    Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\Role\Role;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 
 /**
  * @author: Paulo Dias <dias.paulo@gmail.com>
@@ -37,11 +36,11 @@ class SamlUser implements UserInterface, EquatableInterface
         
         $this->roles = array();
         foreach ($roles as $role) {
-            if (is_string($role)) {
-                $role = new Role($role);
-            } elseif (!$role instanceof RoleInterface) {
-                throw new \InvalidArgumentException(sprintf('Roles must be an array of strings, or RoleInterface instances, but got %s.', gettype($role)));
-            }
+//            if (is_string($role)) {
+//                $role = new Role($role);
+//            } elseif (!$role instanceof RoleInterface) {
+//                throw new \InvalidArgumentException(sprintf('Roles must be an array of strings, or RoleInterface instances, but got %s.', gettype($role)));
+//            }
 
             $this->roles[] = $role;
         }
@@ -79,11 +78,11 @@ class SamlUser implements UserInterface, EquatableInterface
      */
     public function addRole($role)
     {
-        if (is_string($role)) {
-            $role = new Role($role);
-        } elseif (!$role instanceof RoleInterface) {
-            throw new \InvalidArgumentException(sprintf('Role must be a string or RoleInterface instance, but got %s.', gettype($role)));
-        }
+//        if (is_string($role)) {
+//            $role = new Role($role);
+//        } elseif (!$role instanceof RoleInterface) {
+//            throw new \InvalidArgumentException(sprintf('Role must be a string or RoleInterface instance, but got %s.', gettype($role)));
+//        }
         
         if(!\in_array($role, $this->roles)) {
             $this->roles[] = $role;

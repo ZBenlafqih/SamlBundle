@@ -7,11 +7,11 @@
  */
 namespace PDias\SamlBundle\Security\User;
 
-use Symfony\Component\Security\Core\User\UserProviderInterface,
-    Symfony\Component\Security\Core\User\UserInterface,
-    Symfony\Component\Security\Core\Exception\UsernameNotFoundException,
-    Symfony\Component\Security\Core\Exception\UnsupportedUserException,
-    PDias\SamlBundle\Saml\SamlAuth;
+use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use PDias\SamlBundle\Saml\SamlAuth;
 
 /**
  * @author: Paulo Dias <dias.paulo@gmail.com>

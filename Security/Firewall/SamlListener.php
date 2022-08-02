@@ -7,27 +7,28 @@
  */
 namespace PDias\SamlBundle\Security\Firewall;
 
-use Symfony\Component\HttpFoundation\Response,
-    Symfony\Component\HttpFoundation\RedirectResponse,
-    Symfony\Component\HttpKernel\Event\GetResponseEvent,
-    Symfony\Component\Security\Core\Exception\AuthenticationException,
-    Symfony\Component\Security\Core\SecurityContextInterface,
-    Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface,
-    Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface,
-    Symfony\Component\Security\Http\AccessMapInterface,
-    Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface,
-    Symfony\Component\Security\Core\Authentication\Token\TokenInterface,
-    Symfony\Component\Security\Http\Event\InteractiveLoginEvent,
-    Symfony\Component\Security\Http\SecurityEvents,
-    Symfony\Component\EventDispatcher\EventDispatcherInterface,
-    Symfony\Component\HttpFoundation\ParameterBag,
-    PDias\SamlBundle\Security\Authentication\Token\SamlUserToken,
-    Symfony\Component\HttpFoundation\Request,
-    Symfony\Component\Security\Core\Security,
-    Symfony\Component\Security\Http\HttpUtils,
-    Psr\Log\LoggerInterface,
-    Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface,
-    PDias\SamlBundle\Saml\SamlAuth;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\ResponseEvent as GetResponseEvent;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface as SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
+use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
+use Symfony\Component\Security\Http\AccessMapInterface;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use Symfony\Component\Security\Http\SecurityEvents;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\ParameterBag;
+use PDias\SamlBundle\Security\Authentication\Token\SamlUserToken;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Http\HttpUtils;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use PDias\SamlBundle\Saml\SamlAuth;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 
 /**
  * @author: Paulo Dias <dias.paulo@gmail.com>
@@ -38,19 +39,19 @@ class SamlListener
     protected $authenticationManager;
     protected $accessDecisionManager;
     protected $map;
-    protected $eventDispatcher;
     protected $samlAuth;
     protected $httpUtils;
     protected $logger;
     protected $options;
-    
+    protected $eventDispatcher = null;
+
     public function __construct(
             TokenStorageInterface $tokenStorage,
             AuthenticationManagerInterface $authenticationManager,
             AccessDecisionManagerInterface $accessDecisionManager,
             AccessMapInterface $map,
             HttpUtils $httpUtils,
-            EventDispatcherInterface $eventDispatcher = null,
+            EventDispatcherInterface $eventDispatcher,
             SamlAuth $samlAuth,
             LoggerInterface $logger = null,
             array $options = array())
@@ -66,21 +67,24 @@ class SamlListener
         $this->options = $options;
     }
 
-    public function handle(GetResponseEvent $event)
+    public function __invoke(RequestEvent $event)
     {
+
         $request = $event->getRequest();
-        
         try {
             $samlToken = new SamlUserToken();
             $samlToken->setDirectEntry($this->options['direct_entry']);
 
             $authToken = $this->authenticationManager->authenticate($samlToken);
+
             if ($authToken instanceof TokenInterface ) {
                 $this->onSuccess($request, $authToken);
+
                 return $authToken;
             } else if ($authToken instanceof Response) {
                 return $event->setResponse($authToken);
             }
+
         } catch (\Exception $e) {
             $token = $this->tokenStorage->getToken();
             list($attributes) = $this->map->getPatterns($request);
@@ -94,19 +98,20 @@ class SamlListener
             $this->requestSaml($request);
             $token = $this->tokenStorage->getToken();
             if ($token instanceof SamlUserToken/* && $this->providerKey === $token->getProviderKey()*/) {
-                 $this->tokenStorage->setToken(null);
+                $this->tokenStorage->setToken(null);
             }
             return;
-            
+
             //throw new AuthenticationException('The Saml user could not be retrieved from the session.');
         }
-        
+
+        return;
         // By default deny authorization
         $response = new Response();
         $response->setStatusCode(Response::HTTP_FORBIDDEN);
         $event->setResponse($response);
     }
-    
+
     private function onSuccess(Request $request, TokenInterface $token)
     {
         if (null !== $this->logger) {
@@ -121,10 +126,10 @@ class SamlListener
 
         if (null !== $this->eventDispatcher) {
             $loginEvent = new InteractiveLoginEvent($request, $token);
-            $this->eventDispatcher->dispatch(SecurityEvents::INTERACTIVE_LOGIN, $loginEvent);
+            $this->eventDispatcher->dispatch($loginEvent, SecurityEvents::INTERACTIVE_LOGIN);
         }
     }
-    
+
     private function requestSaml(Request $request)
     {
         if($this->options['direct_entry'] || $this->httpUtils->checkRequestPath($request, $this->options['check_path']))
@@ -133,13 +138,13 @@ class SamlListener
             $this->samlAuth->requireAuth();
         }
     }
-    
+
     private function getReturnUrl(Request $request)
     {
         if($this->options['always_use_default_target_path'] && isset($this->options['default_target_path'])) {
             return $this->httpUtils->generateUri($request, $this->options['default_target_path']);
         }
-        
+
         //return $this->httpUtils->generateUri($request, $this->options['login_return']);
         return $this->httpUtils->generateUri($request, '/');
     }
