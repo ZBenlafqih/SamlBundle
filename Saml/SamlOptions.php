@@ -15,24 +15,23 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  *
  * @package    SamlBundle
  * @subpackage Saml
- * @author     Paulo Dias <dias.paulo@gmail.com>
  */
 class SamlOptions
 {
-    protected $options;
+    protected ParameterBag $options;
 
-    public function __construct(array $options = array())
+    public function __construct(array $options = [])
     {
         $this->options = new ParameterBag($options);
     }
-    
-    public function getOptions()
+
+    public function getOptions(): ParameterBag
     {
         return $this->options;
     }
-    
-    public function getOption($optionId)
+
+    public function getOption(string $optionId): mixed
     {
-        return $this->options->get($path);
+        return $this->options->get($optionId);
     }
 }

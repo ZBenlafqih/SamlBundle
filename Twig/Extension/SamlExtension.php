@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the SamlBundle.
  *
@@ -8,60 +9,61 @@
 namespace PDias\SamlBundle\Twig\Extension;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Twig extension for saml
  *
  * @package    SamlBundle
  * @subpackage Twig\Extension
- * @author     Paulo Dias <dias.paulo@gmail.com>
  */
-class SamlExtension extends \Twig_Extension
+class SamlExtension extends AbstractExtension
 {
-    protected $router;
+    protected UrlGeneratorInterface $router;
 
-    /** 
+    /**
      * @param UrlGeneratorInterface $router
-     */ 
+     */
     public function __construct(UrlGeneratorInterface $router)
-    { 
+    {
         $this->router = $router;
     }
 
-    /** 
-     * @return array 
-     */ 
-    public function getFunctions()
+    /**
+     * @return array
+     */
+    public function getFunctions(): array
     {
-        return array( 
-            new \Twig_SimpleFunction('samlLoginUrl', array($this, 'getLoginUrl'), array('is_safe' => array('html'))),
-            new \Twig_SimpleFunction('samlLogoutUrl', array($this, 'getLogoutUrl'), array('is_safe' => array('html'))),
-        ); 
-    } 
+        return [
+            new TwigFunction('samlLoginUrl', [$this, 'getLoginUrl'], ['is_safe' => ['html']]),
+            new TwigFunction('samlLogoutUrl', [$this, 'getLogoutUrl'], ['is_safe' => ['html']]),
+        ];
+    }
 
     /**
-     * @return url 
-     */ 
-    public function getLoginUrl() 
+     * @return string
+     */
+    public function getLoginUrl(): string
     {
         return $this->router->generate('saml_login_check');
     }
-    
+
     /**
-     * @return url 
-     */ 
-    public function getLogoutUrl() 
+     * @return string
+     */
+    public function getLogoutUrl(): string
     {
         return $this->router->generate('saml_logout');
     }
 
-    /** 
-     * Returns the name of the extension. 
-     * 
-     * @return string The extension name 
-     */ 
-    public function getName() 
-    { 
-        return 'saml_extension'; 
-    } 
+    /**
+     * Returns the name of the extension.
+     *
+     * @return string The extension name
+     */
+    public function getName(): string
+    {
+        return 'saml_extension';
+    }
 }

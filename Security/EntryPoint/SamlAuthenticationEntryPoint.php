@@ -21,14 +21,14 @@ use PDias\SamlBundle\Saml\SamlAuth;
  */
 class SamlAuthenticationEntryPoint implements AuthenticationEntryPointInterface
 {
-    protected $options;
-    protected $samlAuth;
-    protected $httpUtils;
+    protected ParameterBag $options;
+    protected SamlAuth $samlAuth;
+    protected HttpUtils $httpUtils;
 
     /**
      * Constructor
      */
-    public function __construct(SamlAuth $samlAuth, HttpUtils $httpUtils, array $options = array())
+    public function __construct(SamlAuth $samlAuth, HttpUtils $httpUtils, array $options = [])
     {
         $this->samlAuth = $samlAuth;
         $this->httpUtils = $httpUtils;
@@ -38,9 +38,11 @@ class SamlAuthenticationEntryPoint implements AuthenticationEntryPointInterface
     /**
      * {@inheritdoc}
      */
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
         $this->samlAuth->setLoginReturn($this->httpUtils->generateUri($request, $this->options->get('login_return')));
         $this->samlAuth->requireAuth();
+
+        return new Response('', Response::HTTP_UNAUTHORIZED);
     }
 }

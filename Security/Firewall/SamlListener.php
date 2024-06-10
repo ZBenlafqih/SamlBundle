@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the SamlBundle.
  *
@@ -11,7 +12,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Event\ResponseEvent as GetResponseEvent;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface as SecurityContextInterface;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Http\AccessMapInterface;
@@ -35,27 +35,27 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
  */
 class SamlListener
 {
-    protected $tokenStorage;
-    protected $authenticationManager;
-    protected $accessDecisionManager;
-    protected $map;
-    protected $samlAuth;
-    protected $httpUtils;
-    protected $logger;
-    protected $options;
-    protected $eventDispatcher = null;
+    protected TokenStorageInterface $tokenStorage;
+    protected AuthenticationManagerInterface $authenticationManager;
+    protected AccessDecisionManagerInterface $accessDecisionManager;
+    protected AccessMapInterface $map;
+    protected SamlAuth $samlAuth;
+    protected HttpUtils $httpUtils;
+    protected ?LoggerInterface $logger;
+    protected array $options;
+    protected ?EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-            TokenStorageInterface $tokenStorage,
-            AuthenticationManagerInterface $authenticationManager,
-            AccessDecisionManagerInterface $accessDecisionManager,
-            AccessMapInterface $map,
-            HttpUtils $httpUtils,
-            EventDispatcherInterface $eventDispatcher,
-            SamlAuth $samlAuth,
-            LoggerInterface $logger = null,
-            array $options = array())
-    {
+        TokenStorageInterface $tokenStorage,
+        AuthenticationManagerInterface $authenticationManager,
+        AccessDecisionManagerInterface $accessDecisionManager,
+        AccessMapInterface $map,
+        HttpUtils $httpUtils,
+        EventDispatcherInterface $eventDispatcher,
+        SamlAuth $samlAuth,
+        ?LoggerInterface $logger = null,
+        array $options = []
+    ) {
         $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
         $this->accessDecisionManager = $accessDecisionManager;
@@ -71,9 +71,8 @@ class SamlListener
      * @param RequestEvent $event
      * @return TokenInterface|void
      */
-    public function __invoke(RequestEvent $event)
+    public function __invoke(RequestEvent $event): ?TokenInterface
     {
-
         $request = $event->getRequest();
         try {
             $samlToken = new SamlUserToken();
@@ -81,21 +80,20 @@ class SamlListener
 
             $authToken = $this->authenticationManager->authenticate($samlToken);
 
-            if ($authToken instanceof TokenInterface ) {
+            if ($authToken instanceof TokenInterface) {
                 $this->onSuccess($request, $authToken);
 
                 return $authToken;
             } else if ($authToken instanceof Response) {
                 return $event->setResponse($authToken);
             }
-
         } catch (\Exception $e) {
             $token = $this->tokenStorage->getToken();
             list($attributes) = $this->map->getPatterns($request);
 
             if (null !== $token && null !== $attributes) {
                 if ($token->isAuthenticated() && $this->accessDecisionManager->decide($token, $attributes, $request)) {
-                    return;
+                    return null;
                 }
             }
 
@@ -104,22 +102,20 @@ class SamlListener
             if ($token instanceof SamlUserToken/* && $this->providerKey === $token->getProviderKey()*/) {
                 $this->tokenStorage->setToken(null);
             }
-            return;
-
-            //throw new AuthenticationException('The Saml user could not be retrieved from the session.');
+            return null;
         }
 
-        return;
+        return null;
     }
 
     /**
      * @param Request $request
      * @param TokenInterface $token
      */
-    private function onSuccess(Request $request, TokenInterface $token)
+    private function onSuccess(Request $request, TokenInterface $token): void
     {
         if (null !== $this->logger) {
-            $this->logger->info(sprintf('User "%s" has been authenticated successfully', $token->getUsername()));
+            $this->logger->info(sprintf('User "%s" has been authenticated successfully', $token->getUserIdentifier()));
         }
 
         $this->tokenStorage->setToken($token);
@@ -134,13 +130,9 @@ class SamlListener
         }
     }
 
-    /**
-     * @param Request $request
-     */
-    private function requestSaml(Request $request)
+    private function requestSaml(Request $request): void
     {
-        if($this->options['direct_entry'] || $this->httpUtils->checkRequestPath($request, $this->options['check_path']))
-        {
+        if ($this->options['direct_entry'] || $this->httpUtils->checkRequestPath($request, $this->options['check_path'])) {
             $this->samlAuth->setLoginReturn($this->getReturnUrl($request));
             $this->samlAuth->requireAuth();
         }
@@ -148,15 +140,14 @@ class SamlListener
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return string
      */
-    private function getReturnUrl(Request $request)
+    private function getReturnUrl(Request $request): string
     {
-        if($this->options['always_use_default_target_path'] && isset($this->options['default_target_path'])) {
+        if ($this->options['always_use_default_target_path'] && isset($this->options['default_target_path'])) {
             return $this->httpUtils->generateUri($request, $this->options['default_target_path']);
         }
 
-        //return $this->httpUtils->generateUri($request, $this->options['login_return']);
         return $this->httpUtils->generateUri($request, '/');
     }
 }

@@ -21,25 +21,24 @@ use PDias\SamlBundle\Saml\SamlAuth;
  *
  * @package    SamlBundle
  * @subpackage Security\Handlers
- * @author     Paulo Dias <dias.paulo@gmail.com>
  */
 class SamlLogoutHandler implements LogoutHandlerInterface
 {
-    protected $options;
-    protected $samlAuth;
-    protected $httpUtils;
+    protected ParameterBag $options;
+    protected SamlAuth $samlAuth;
+    protected HttpUtils $httpUtils;
 
-    public function __construct(SamlAuth $samlAuth, HttpUtils $httpUtils, array $options = array())
+    public function __construct(SamlAuth $samlAuth, HttpUtils $httpUtils, array $options = [])
     {
         $this->samlAuth = $samlAuth;
         $this->httpUtils = $httpUtils;
         $this->options = new ParameterBag($options);
     }
-        
-    public function logout(Request $request, Response $response, TokenInterface $token)
+
+    public function logout(Request $request, Response $response, TokenInterface $token): void
     {
-        if($this->samlAuth->isAuthenticated()) {
-            if(method_exists($response, 'getTargetUrl')) {
+        if ($this->samlAuth->isAuthenticated()) {
+            if (method_exists($response, 'getTargetUrl')) {
                 $this->samlAuth->setLogoutReturn($response->getTargetUrl());
             } else {
                 $this->samlAuth->setLogoutReturn($this->httpUtils->generateUri($request, $this->options->get('logout_return')));

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the SamlBundle.
  *
@@ -13,17 +14,18 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
- * @author: Paulo Dias <dias.paulo@gmail.com>
+ * @package    SamlBundle
+ * @subpackage DependencyInjection
  */
 class SamlExtension extends Extension
 {
     // You can define what service definitions you want to load
-    protected $configFiles = array(
+    protected array $configFiles = [
         'services',
         'security'
-    );
-    
-    public function load(array $configs, ContainerBuilder $container)
+    ];
+
+    public function load(array $configs, ContainerBuilder $container): void
     {
         // Configuration
         $configuration = new Configuration();
@@ -36,7 +38,7 @@ class SamlExtension extends Extension
         foreach ($this->configFiles as $filename) {
             $loader->load($file = sprintf('%s.%s', $filename, 'yml'));
         }
-        
+
         // Set parameters
         if(!isset($config['service_provider'])) {
             throw new \InvalidArgumentException('SamlBundle says "Configured default service provider is not defined."');
@@ -51,7 +53,7 @@ class SamlExtension extends Extension
                 throw new \InvalidArgumentException('SamlBundle says "Configured default path [' . $config['autoload_path'] . '] defines a file that does not exist."');
             }
         }
-        
+
         $container->setParameter('saml.autoload_path', $config['autoload_path']);
         $container->setParameter('saml.authentication_field', $config['authentication_field']);
     }

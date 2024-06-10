@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the SamlBundle.
  *
@@ -15,36 +16,31 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * SamlBundle security controller.
  *
- * @author Paulo Dias <dias.paulo@gmail.com>
+ * @package    SamlBundle
+ * @subpackage Controller
  */
 class SecurityController extends AbstractController
 {
     /**
-     * @param Request $request
-     * @Route("/login-saml")
-     * @return Response
+     * @Route("/login-saml", name="saml_login")
      */
-    public function loginAction(Request $request)
+    public function loginAction(Request $request): Response
     {
         return $this->render('@Saml/Security/login.html.twig');
     }
 
     /**
-     * @param Request $request
-     * @Route("/login-check-saml")
-     * @return Response
+     * @Route("/login-check-saml", name="saml_check")
      */
-    public function checkAction()
+    public function checkAction(): void
     {
         throw new \RuntimeException('You must configure the check path to be handled by the firewall using saml in your security firewall configuration.');
     }
 
     /**
-     * @param Request $request
-     * @Route("/logout-saml")
-     * @return Response
+     * @Route("/logout-saml", name="saml_logout")
      */
-    public function logoutAction()
+    public function logoutAction(): void
     {
         throw new \RuntimeException('You must activate the logout in your security firewall configuration.');
     }

@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the SamlBundle.
  *
@@ -15,7 +16,7 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
  */
 class Configuration implements ConfigurationInterface
 {
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
         $treeBuilder = new TreeBuilder('saml');
 
@@ -28,19 +29,19 @@ class Configuration implements ConfigurationInterface
         
         $rootNode
             ->children()
-                ->scalarNode('service_provider')
-                    ->defaultValue('default-sp')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('autoload_path')
-                    ->defaultValue('/usr/share/simplesamlphp/lib/_autoload.php')
-                    ->cannotBeEmpty()
-                ->end()
-                ->scalarNode('authentication_field')
-                    ->defaultValue('mail')
-                    ->cannotBeEmpty()
-                ->end()
-        ->end();
+            ->scalarNode('service_provider')
+            ->defaultValue('default-sp')
+            ->cannotBeEmpty()
+            ->end()
+            ->scalarNode('autoload_path')
+            ->defaultValue('/usr/share/simplesamlphp/lib/_autoload.php')
+            ->cannotBeEmpty()
+            ->end()
+            ->scalarNode('authentication_field')
+            ->defaultValue('mail')
+            ->cannotBeEmpty()
+            ->end()
+            ->end();
 
         return $treeBuilder;
     }

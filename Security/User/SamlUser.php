@@ -8,13 +8,14 @@
 namespace PDias\SamlBundle\Security\User;
 
 use Symfony\Component\Security\Core\Role\Role;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\EquatableInterface;
 
 /**
  * @author: Paulo Dias <dias.paulo@gmail.com>
  */
-class SamlUser implements UserInterface, EquatableInterface
+class SamlUser implements UserInterface, PasswordAuthenticatedUserInterface, EquatableInterface
 {
     //private $id = null;
     private $username;
@@ -24,7 +25,7 @@ class SamlUser implements UserInterface, EquatableInterface
     public function __construct($username, array $roles = array(), array $attributes = array())
     {
         $this->username = $username;
-        
+
         $this->attributes = array();
         foreach($attributes as $key => $attribute){
             if(count($attribute)==1) {
@@ -33,7 +34,7 @@ class SamlUser implements UserInterface, EquatableInterface
                 $this->setAttribute($key, $attribute);
             }
         }
-        
+
         $this->roles = array();
         foreach ($roles as $role) {
 //            if (is_string($role)) {
@@ -57,7 +58,15 @@ class SamlUser implements UserInterface, EquatableInterface
      *
      * @return string User name
      */
-    public function getUsername()
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
     {
         return $this->username;
     }
@@ -71,7 +80,7 @@ class SamlUser implements UserInterface, EquatableInterface
     {
         return $this->roles;
     }
-    
+
     /**
      * Add user role.
      *
@@ -83,12 +92,12 @@ class SamlUser implements UserInterface, EquatableInterface
 //        } elseif (!$role instanceof RoleInterface) {
 //            throw new \InvalidArgumentException(sprintf('Role must be a string or RoleInterface instance, but got %s.', gettype($role)));
 //        }
-        
+
         if(!\in_array($role, $this->roles)) {
             $this->roles[] = $role;
         }
     }
-    
+
     /**
      * @param string $role
      *
@@ -96,14 +105,14 @@ class SamlUser implements UserInterface, EquatableInterface
      */
     public function hasRole($role)
     {
-        foreach ($this->roles as $k => $r) { 
-            $roles[$k] = $r instanceof RoleInterface ? $r->getRole() : (string) $r;  
-        } 
+        foreach ($this->roles as $k => $r) {
+            $roles[$k] = $r instanceof RoleInterface ? $r->getRole() : (string) $r;
+        }
         $roles = array_flip(array_flip($roles));
-        
+
         return in_array($role, $roles);
     }
-    
+
     /**
      * Returns the token attributes.
      *
@@ -135,7 +144,7 @@ class SamlUser implements UserInterface, EquatableInterface
     {
         return array_key_exists($name, $this->attributes);
     }
-    
+
     /**
      * Returns a attribute value.
      *
@@ -151,7 +160,7 @@ class SamlUser implements UserInterface, EquatableInterface
 
         return $this->attributes[$name];
     }
-    
+
     /**
      * Sets a attribute.
      *
@@ -185,9 +194,9 @@ class SamlUser implements UserInterface, EquatableInterface
 
         return true;
     }
-    
+
     //For compatiblity with other user bundles
-    
+
     /**
      * Sets id.
      *
@@ -198,7 +207,7 @@ class SamlUser implements UserInterface, EquatableInterface
         $this->id = $id;
         return $this;
     }*/
-    
+
     /**
      * Returns the id.
      */

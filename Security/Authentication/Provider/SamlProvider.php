@@ -13,43 +13,46 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 use PDias\SamlBundle\Security\Authentication\Token\SamlUserToken;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @author: Paulo Dias <dias.paulo@gmail.com>
  */
 class SamlProvider implements AuthenticationProviderInterface
 {
-    private $userProvider;
-    private $cacheDir;
+    private UserProviderInterface $userProvider;
+    private string $cacheDir;
 
-    public function __construct(UserProviderInterface $userProvider, $cacheDir)
+    public function __construct(UserProviderInterface $userProvider, string $cacheDir)
     {
         $this->userProvider = $userProvider;
         $this->cacheDir     = $cacheDir;
     }
 
-    public function authenticate(TokenInterface $token)
+    public function authenticate(TokenInterface $token): ?TokenInterface
     {
         if (!$this->supports($token)) { 
             return null;
-        } 
-        
-        $user = $this->userProvider->loadUserByUsername($token->getUsername());
-        
-        if ($user) {
-            $authenticatedToken = new SamlUserToken($user->getRoles());
-            $authenticatedToken->setUser($user);
-            $authenticatedToken->setAuthenticated(true);
-            $authenticatedToken->setAttributes($this->userProvider->getAttributes());
-            $authenticatedToken->setDirectEntry($token->getDirectEntry());
+        }
 
-            return $authenticatedToken;
+        if ($token instanceof SamlUserToken) {
+            $user = $this->userProvider->loadUserByIdentifier($token->getUserIdentifier());
+
+            if ($user instanceof UserInterface) {
+                $authenticatedToken = new SamlUserToken($user->getRoles());
+                $authenticatedToken->setUser($user);
+                $authenticatedToken->setAuthenticated(true);
+                $authenticatedToken->setAttributes($this->userProvider->getAttributes());
+                $authenticatedToken->setDirectEntry($token->getDirectEntry());
+
+                return $authenticatedToken;
+            }
         }
 
         throw new AuthenticationException('The SAML authentication failed.');
     }
 
-    public function supports(TokenInterface $token)
+    public function supports(TokenInterface $token): bool
     {
         return $token instanceof SamlUserToken;
     }

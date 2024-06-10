@@ -14,7 +14,7 @@ This bundle is under the MIT license. [***See the complete license in the bundle
 
 ## Install ##
 
-    composer require kurollo/Saml-Bundle
+    composer require alteis/Saml-Bundle
 
 ## Configuration ##
  add in services.yml

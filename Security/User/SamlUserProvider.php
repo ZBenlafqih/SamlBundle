@@ -1,4 +1,5 @@
 <?php
+
 /*
  * This file is part of the SamlBundle.
  *
@@ -18,39 +19,39 @@ use PDias\SamlBundle\Saml\SamlAuth;
  */
 class SamlUserProvider implements UserProviderInterface
 {
-    protected $samlAuth;
-    protected $attributes;
- 
+    protected SamlAuth $samlAuth;
+    protected array $attributes;
+
     public function __construct(SamlAuth $samlAuth)
     {
         $this->samlAuth = $samlAuth;
         $this->attributes = $this->samlAuth->getAttributes();
     }
-    
-    public function loadUserByUsername($username)
+
+    public function loadUserByIdentifier(string $identifier): UserInterface
     {
         if ($this->samlAuth->isAuthenticated()) {
-            return new SamlUser($this->samlAuth->getUsername(), array('ROLE_USER'), $this->attributes);
+            return new SamlUser($this->samlAuth->getUsername(), ['ROLE_USER'], $this->attributes);
         }
 
-        throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $username));
+        throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $identifier));
     }
 
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(UserInterface $user): UserInterface
     {
         if (!$user instanceof SamlUser) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', get_class($user)));
         }
 
-        return $this->loadUserByUsername($user->getUsername());
+        return $this->loadUserByIdentifier($user->getUsername());
     }
 
-    public function supportsClass($class)
+    public function supportsClass(string $class): bool
     {
-        return $class === 'PDias\SamlBundle\Security\User\SamlUser';
+        return $class === SamlUser::class;
     }
-    
-    public function getAttributes()
+
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
