@@ -14,7 +14,8 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\SecurityExtension;
 
 /**
- * @author: Paulo Dias <dias.paulo@gmail.com>
+ * @package    SamlBundle
+ * @subpackage DependencyInjection\Security\Factory
  */
 class SamlBundle extends Bundle
 {

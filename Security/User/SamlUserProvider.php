@@ -15,7 +15,8 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use PDias\SamlBundle\Saml\SamlAuth;
 
 /**
- * @author: Paulo Dias <dias.paulo@gmail.com>
+ * @package    SamlBundle
+ * @subpackage Security\User
  */
 class SamlUserProvider implements UserProviderInterface
 {
@@ -35,6 +36,12 @@ class SamlUserProvider implements UserProviderInterface
         }
 
         throw new UsernameNotFoundException(sprintf('Username "%s" does not exist.', $identifier));
+    }
+
+    // To maintain backward compatibility, implement loadUserByUsername as well
+    public function loadUserByUsername(string $username): UserInterface
+    {
+        return $this->loadUserByIdentifier($username);
     }
 
     public function refreshUser(UserInterface $user): UserInterface

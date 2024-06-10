@@ -13,12 +13,13 @@ use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\DependencyInjection\ChildDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
 use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AbstractFactory;
+use Symfony\Bundle\SecurityBundle\DependencyInjection\Security\Factory\AuthenticatorFactoryInterface;
 
 /**
  * @package    SamlBundle
  * @subpackage DependencyInjection\Security\Factory
  */
-class SamlFactory extends AbstractFactory
+class SamlFactory extends AbstractFactory implements AuthenticatorFactoryInterface
 {
     public function getPosition(): string
     {
@@ -81,5 +82,10 @@ class SamlFactory extends AbstractFactory
                 ->replaceArgument(2, array_intersect_key($config, $this->options));
             $logoutListener->addMethodCall('addHandler', [new Reference($samlListenerId)]);
         }
+    }
+
+    public function createAuthenticator(ContainerBuilder $container, string $firewallName, array $config, string $userProviderId): string
+    {
+        return $this->createListener($container, $firewallName, $config, $userProviderId);
     }
 }
