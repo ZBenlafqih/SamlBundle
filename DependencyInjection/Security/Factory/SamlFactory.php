@@ -88,4 +88,9 @@ class SamlFactory extends AbstractFactory implements AuthenticatorFactoryInterfa
     {
         return $this->createListener($container, $firewallName, $config, $userProviderId);
     }
+
+    public function getPriority(): int
+    {
+        return 0;
+    }
 }
